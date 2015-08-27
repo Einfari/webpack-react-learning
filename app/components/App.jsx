@@ -22,17 +22,19 @@ export default class App extends React.Component {
             },
             ]
         };
-        this.findNote = this.findNote.bind(this);
-        this.addNote = this.addNote.bind(this);
-        this.editNote = this.editNote.bind(this);
+        this.findNote   = this.findNote.bind(this);
+        this.addNote    = this.addNote.bind(this);
+        this.editNote   = this.editNote.bind(this);
+        this.deleteNote = this.deleteNote.bind(this);
     }
+
     render() {
         const notes = this.state.notes;
         const notes_v2 = this.state.notes_v2;
         return (
             <div>
                 <button onClick={this.addNote}>+</button>
-                <Notes items={notes} onEdit={this.editNote} />
+                <Notes items={notes} onEdit={this.editNote} onDelete={this.deleteNote} />
             </div>
         );
     }
@@ -45,6 +47,7 @@ export default class App extends React.Component {
             }])
         });
     }
+
     editNote(id, task) {
         let notes = this.state.notes;
         const noteIndex = this.findNote(id);
@@ -57,15 +60,29 @@ export default class App extends React.Component {
 
         this.setState({notes});
     }
+
     findNote(id) {
-        let notes = this.state.notes;
+        const notes = this.state.notes;
         // const noteIndex = notes.findIndex(function(note) { return note.id === id});
         const noteIndex = notes.findIndex((note) => note.id === id);
 
         if(noteIndex < 0) {
-            console.log('Failed to find note', notes, id);
+            console.warn('Failed to find note', notes, id);
         }
 
         return noteIndex;
+    }
+
+    deleteNote(id) {
+        const notes = this.state.notes;
+        const noteIndex = this.findNote(id);
+
+        if(noteIndex < 0) {
+            return;
+        };
+
+        this.setState({
+            notes: notes.slice(0, noteIndex).concat(notes.slice(noteIndex + 1))
+        });
     }
 }
